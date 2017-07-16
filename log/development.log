@@ -1,0 +1,7 @@
+Started GET "/" for 127.0.0.1 at 2017-07-16 19:19:43 -0400
+Processing by ApiController#home as HTML
+  Rendering api/home.html.erb
+  Rendered api/home.html.erb (0.9ms)
+Completed 200 OK in 12ms (Views: 3.9ms | ActiveRecord: 0.0ms)
+
+

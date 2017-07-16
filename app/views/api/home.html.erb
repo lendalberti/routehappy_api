@@ -1,0 +1,128 @@
+<script
+  src="https://code.jquery.com/jquery-1.12.4.min.js"
+  integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+  crossorigin="anonymous"></script>
+ 
+
+<script type="text/javascript">
+
+  $(document).ready(function() {
+
+    $('#api_photo_upload').on('click', function() {
+      $('#photo_upload').toggle();
+    });
+ 
+    $('#api_photo_fetch').on('click', function() {
+      $('#photo_fetch').toggle();
+    });
+
+  });
+  
+</script>
+
+<style type="text/css">
+  
+body {
+  font-family: "Helvetica Neue LT", "Hiragino Kaku Gothic Pro", "Helvetica", "Tahoma", "Arial", sans-serif;
+}
+
+p,ul,li,h2 {
+    line-height: 1.5rem;
+}
+
+#photo_fetch,
+#photo_upload {
+  display: none;
+  line-height: 1rem;
+  list-style-type: none;
+  margin-left:20px;  
+}
+
+</style>
+
+<h2>Reference Documentation</h2>
+<p>These are the REST API endpoint reference docs.</p>
+
+<p>
+  <ul>
+    <li><a id='api_photo_upload' href='#'>POST api/photo_upload</a></li>
+    <li id='photo_upload'>
+      <pre>
+      Example usage:
+
+        require "uri"
+        require "net/http"
+        require "base64"
+
+
+        if ARGV[0].nil?
+          puts "Usage: upload_image 'filename'"
+          exit
+        end
+
+        image = ARGV[0]  
+        m = image.match(/png|jpg/)
+
+        if m
+          filetype = m[0]
+          filename = File.basename(image)
+
+          encoded_content = Base64.encode64( File.open(image, "rb").read )
+          postParams = { 'encoded_content' => encoded_content, 'filename' => filename, 'filetype' => filetype }
+          print "#{filename}..."
+          response = Net::HTTP.post_form(URI.parse( 'http://localhost:3000/api/photo_upload' ), postParams )
+          
+          if response.code == '200'
+            puts "saved!"
+          else
+            puts "NOT saved!"
+          end
+        end
+
+
+        >> 
+        ruby upload_image.rb ~/Pictures/black_cat.png 
+
+
+      </pre>
+    </li>
+    <li><a id='api_photo_fetch' href='#'>GET api/photo_list</a></li>
+    <li id='photo_fetch'>
+    <pre>
+    Example usage:
+
+      require "uri"
+      require "net/http"
+      require "base64"
+      require "byebug"
+      require "json"
+
+
+      if ARGV[0].nil?
+        puts "Usage: fetch_images 'target_directory'"
+        exit
+      end
+
+      target_directory = ARGV[0]
+
+
+      response = Net::HTTP.get(URI.parse('http://localhost:3000/api/photo_list'))
+      response = JSON.parse(response)
+
+      response['encoded_hub_images'].each do |image|
+        decoded_content = Base64.decode64(image['encoded_content']) 
+        filename = image['filename']
+        
+        File.open(target_directory+"/#{filename}", "wb") do |f|
+          f.write(decoded_content)
+        end
+      end
+
+
+
+        >> mkdir FETCHED_IMAGES
+        >> ruby fetch_images.rb ./FETCHED_IMAGES
+
+    </pre>
+  </ul>
+</p>
